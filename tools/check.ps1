@@ -12,8 +12,7 @@ Set-StrictMode -Version 3.0
 $ErrorActionPreference = "Stop"
 
 $AppRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
-$RepoRoot = (Resolve-Path (Join-Path $AppRoot "..")).Path
-$Python = Join-Path $RepoRoot ".venv\Scripts\python.exe"
+$Python = Join-Path $AppRoot ".venv\Scripts\python.exe"
 $failed = $false
 $env:PYTHONDONTWRITEBYTECODE = "1"
 
