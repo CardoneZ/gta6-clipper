@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GTA6 Clipper Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Grotesk:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+  <div class="bg-glow" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span class="brand-word">GTA6<span class="slash">//</span>CLIPPER</span>
+      <span class="brand-sub">Studio</span>
+    </div>
+    <div class="topbar-right">
+      <span id="memberPill" class="pill pill-muted">Guest</span>
+      <button id="accountBtn" class="btn btn-ghost" type="button">Sign in</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <!-- Stage: massive preview -->
+    <section class="stage card" aria-label="Preview">
+      <div class="stage-frame">
+        <video id="player" class="player" controls playsinline preload="metadata"></video>
+        <div id="playerEmpty" class="player-empty">
+          <div class="empty-glyph" aria-hidden="true">▶</div>
+          <p>Your 9:16 clips land here.</p>
+          <p class="muted">Drop a gameplay session to start.</p>
+        </div>
+      </div>
+      <div class="stage-meta">
+        <div id="playerTitle" class="stage-title">No clip selected</div>
+        <div id="playerTags" class="tag-row"></div>
+      </div>
+      <ol id="beatRail" class="beat-rail" aria-label="Story beats">
+        <li data-beat="HOOK"><span>Hook</span></li>
+        <li data-beat="CLIMAX"><span>Chaos</span></li>
+        <li data-beat="TROLL_PAYOFF"><span>Payoff</span></li>
+        <li data-beat="COMMENT_BAIT"><span>Comment Bait</span></li>
+      </ol>
+    </section>
+
+    <!-- Controls -->
+    <section class="controls" aria-label="Create">
+      <div id="paywall" class="card paywall" hidden>
+        <div class="paywall-price"><span class="big">$30</span><span>/mo</span></div>
+        <div>
+          <h2>Creator membership</h2>
+          <p class="muted">Unlimited long-form uploads, GPU rendering, RVC character voices.</p>
+        </div>
+        <button id="devActivate" class="btn btn-primary" type="button" hidden>Activate (dev)</button>
+      </div>
+
+      <div id="dropzone" class="card dropzone" tabindex="0" role="button" aria-label="Upload gameplay video">
+        <input id="fileInput" type="file" accept=".mp4,.mkv,.mov,.webm,video/*" hidden>
+        <div class="drop-inner">
+          <div class="drop-icon" aria-hidden="true">⇪</div>
+          <div>
+            <strong>Drop a gameplay session</strong>
+            <div class="muted">MP4 · MKV · MOV · WEBM — multi-hour files welcome (up to 64 GB)</div>
+          </div>
+        </div>
+        <div id="uploadBox" class="upload-box" hidden>
+          <div class="upload-head"><span id="uploadName"></span><span id="uploadStat" class="muted"></span></div>
+          <div class="bar"><div id="uploadBar" class="bar-fill"></div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 class="card-title">Templates</h3>
+        <div class="toggles" id="templateToggles">
+          <label class="toggle"><input type="checkbox" value="cinematic_hud" checked><span class="toggle-ui"></span><span>GTA V/VI Cinematic HUD</span></label>
+          <label class="toggle"><input type="checkbox" value="viral_subtitles" checked><span class="toggle-ui"></span><span>TikTok Viral Subtitles</span></label>
+          <label class="toggle"><input type="checkbox" value="meme_soundboard"><span class="toggle-ui"></span><span>Meme Soundboard</span></label>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="row-between">
+          <h3 class="card-title">Narrative</h3>
+          <label class="toggle compact"><input id="storyMode" type="checkbox"><span class="toggle-ui"></span><span>Long-Form Story</span></label>
+        </div>
+        <div id="storyOpts" class="story-opts" hidden>
+          <label class="field">
+            <span>Arc length <output id="storyLenOut">45</output>s</span>
+            <input id="storyLen" type="range" min="30" max="60" step="5" value="45">
+          </label>
+          <div class="beat-chips"><span>Hook</span><i>→</i><span>Chaos</span><i>→</i><span>Payoff</span><i>→</i><span>Comment Bait</span></div>
+        </div>
+        <label class="field">
+          <span class="row-between"><span>Custom TTS Script</span><span id="scriptCount" class="muted">0 / 1800</span></span>
+          <textarea id="script" rows="4" maxlength="1800" placeholder="Optional. One line per beat in story mode, e.g.&#10;Bro thought he could outrun five stars…&#10;Then the bridge happened."></textarea>
+        </label>
+        <div class="grid-2">
+          <label class="field"><span>Voice engine</span>
+            <select id="provider">
+              <option value="offline_local">Offline (SAPI)</option>
+              <option value="kokoro_local">Kokoro (local neural)</option>
+              <option value="neural_edge">Neural Edge</option>
+              <option value="rvc_voice">RVC character clone</option>
+              <option value="elevenlabs">ElevenLabs</option>
+            </select>
+          </label>
+          <label class="field"><span>Character voice</span>
+            <select id="voice"><option value="">Default</option></select>
+          </label>
+          <label class="field"><span>Language</span>
+            <select id="language"><option value="EN">English</option><option value="ES">Español</option></select>
+          </label>
+          <label class="field"><span>RVC pitch <output id="pitchOut">+8</output></span>
+            <input id="pitch" type="range" min="-12" max="12" step="1" value="8">
+          </label>
+        </div>
+        <button id="generate" class="btn btn-primary btn-xl" type="button" disabled>Generate clips</button>
+        <p id="generateHint" class="muted small">Upload a session first.</p>
+      </div>
+    </section>
+
+    <!-- Queue -->
+    <section class="card queue" aria-label="Processing queue">
+      <div class="row-between"><h3 class="card-title">Queue</h3><span id="queueSummary" class="muted small"></span></div>
+      <ul id="queueList" class="queue-list"><li class="muted small">No jobs yet.</li></ul>
+    </section>
+
+    <!-- Library -->
+    <section class="card library" aria-label="Exports library">
+      <div class="row-between">
+        <h3 class="card-title">Exports Library</h3>
+        <div class="filters" id="tagFilters" role="group" aria-label="Filter by moment"></div>
+      </div>
+      <div id="library" class="library-grid"><p class="muted small">Rendered 9:16 clips appear here.</p></div>
+    </section>
+  </main>
+
+  <dialog id="authDialog" class="dialog">
+    <form id="authForm" method="dialog" class="auth-form">
+      <div class="tabs" role="tablist">
+        <button type="button" class="tab active" data-mode="login" role="tab">Sign in</button>
+        <button type="button" class="tab" data-mode="register" role="tab">Create account</button>
+      </div>
+      <label class="field"><span>Email</span><input id="authEmail" type="email" autocomplete="email" required></label>
+      <label class="field"><span>Password</span><input id="authPassword" type="password" autocomplete="current-password" minlength="10" required></label>
+      <p id="authError" class="error small" hidden></p>
+      <div class="row-between">
+        <button type="button" id="authCancel" class="btn btn-ghost">Cancel</button>
+        <button type="submit" id="authSubmit" class="btn btn-primary">Sign in</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="app.js"></script>
+</body>
+</html>

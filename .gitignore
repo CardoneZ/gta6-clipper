@@ -1,0 +1,3 @@
+# Runtime data: SQLite DB, uploaded recordings, rendered exports
+.data/
+__pycache__/
